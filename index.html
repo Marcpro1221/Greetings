@@ -93,6 +93,7 @@
       box-shadow: var(--shadow);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
+      overflow:hidden;
       position:relative;
       transform: translate3d(0,0,0);
     }
@@ -409,6 +410,7 @@
             <source src="vm.m4a" type="audio/mp4" />
             Your browser does not support the audio element.
         </audio>
+        </div>
         <div class="cute-quiz" id="cuteQuiz" aria-label="Cute question">
             <div class="cute-q">Quick question… 😶‍🌫️</div>
             <div class="cute-title">Are you cute?</div>
@@ -418,7 +420,6 @@
                 <button class="btn-no" id="btnNo" type="button" aria-label="No (this button moves)">No</button>
             </div>
             <div class="cute-result" id="cuteResult" aria-live="polite"></div>
-        </div>
         </div>
       <div class="footer-floral" aria-hidden="true"></div>
     </section>
