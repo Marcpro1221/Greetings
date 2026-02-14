@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#ff6b9c" />
+  <title>Valentine’s Greeting Card</title>
+  <style>
+    :root{
+      --bg1:#fff1f6;
+      --bg2:#ffe6f0;
+      --ink:#2b1c22;
+      --muted:#6a4b57;
+      --card:rgba(255,255,255,.78);
+      --stroke:rgba(255, 107, 156, .35);
+      --shadow: 0 20px 50px rgba(0,0,0,.12);
+      --radius: 22px;
+    }
+
+    *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: ui-rounded, system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Display",
+                   "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(1200px 800px at 20% 10%, #ffffff 0%, rgba(255,255,255,0) 55%),
+        radial-gradient(1000px 800px at 80% 20%, rgba(255,148,198,.35) 0%, rgba(255,148,198,0) 65%),
+        radial-gradient(900px 900px at 40% 90%, rgba(255,205,230,.55) 0%, rgba(255,205,230,0) 65%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
+      overflow:hidden;
+      touch-action: manipulation;
+    }
+
+    .petal-bg{
+      position:fixed;
+      inset:-20vmax;
+      pointer-events:none;
+      background:
+        radial-gradient(circle at 10% 20%, rgba(255,77,136,.12) 0 6px, transparent 7px),
+        radial-gradient(circle at 30% 70%, rgba(255,170,205,.14) 0 7px, transparent 8px),
+        radial-gradient(circle at 70% 40%, rgba(255,77,136,.10) 0 5px, transparent 6px),
+        radial-gradient(circle at 85% 80%, rgba(255,210,230,.18) 0 8px, transparent 9px);
+      background-size: 180px 180px, 220px 220px, 200px 200px, 240px 240px;
+      opacity:.9;
+      animation: drift 18s linear infinite;
+      transform: translate3d(0,0,0);
+    }
+    @keyframes drift{
+      0%{ transform: translate3d(0,0,0) rotate(0deg); }
+      100%{ transform: translate3d(6vmin,-8vmin,0) rotate(8deg); }
+    }
+
+    .wrap{
+      position:relative;
+      height:100%;
+      width:100%;
+      display:grid;
+      place-items:center;
+      padding:
+        max(18px, env(safe-area-inset-top))
+        max(14px, env(safe-area-inset-right))
+        max(18px, env(safe-area-inset-bottom))
+        max(14px, env(safe-area-inset-left));
+    }
+
+    #bloom-layer{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+    }
+
+    .card{
+      width:min(560px, 92vw);
+      max-height: 86vh;
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,.6);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      overflow:hidden;
+      position:relative;
+      transform: translate3d(0,0,0);
+    }
+
+    .header{
+      padding: 22px 22px 16px;
+      position:relative;
+      overflow:hidden;
+    }
+    .header:before{
+      content:"";
+      position:absolute;
+      inset: -60px -40px auto -40px;
+      height: 160px;
+      background: radial-gradient(120px 120px at 20% 40%, rgba(255,77,136,.22) 0%, rgba(255,77,136,0) 70%),
+                  radial-gradient(140px 140px at 80% 20%, rgba(255,155,191,.26) 0%, rgba(255,155,191,0) 70%),
+                  linear-gradient(135deg, rgba(255,77,136,.18), rgba(255,155,191,.10));
+      transform: rotate(-4deg);
+    }
+
+    .title-row{
+      position:relative;
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .badge{
+      width:44px; height:44px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(255,77,136,.95), rgba(255,155,191,.9));
+      display:grid;
+      place-items:center;
+      box-shadow: 0 10px 22px rgba(255,77,136,.25);
+      flex:0 0 auto;
+    }
+    .badge svg{ width:26px; height:26px; }
+    .title{
+      margin:0;
+      font-size: clamp(22px, 5vw, 30px);
+      letter-spacing: .2px;
+      line-height: 1.1;
+    }
+    .subtitle{
+      position:relative;
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .content{ padding: 0 22px 18px; position:relative; }
+
+    .message{
+      margin: 14px 0 0;
+      padding: 16px 16px;
+      background: rgba(255,255,255,.72);
+      border: 1px solid var(--stroke);
+      border-radius: 18px;
+      box-shadow: 0 10px 20px rgba(0,0,0,.06);
+    }
+    .message p{
+      margin:0;
+      font-size: 15px;
+      line-height: 1.55;
+      color:#2b1c22;
+      white-space: pre-wrap;
+    }
+
+    .hint{
+      margin: 14px 2px 0;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      color: rgba(43,28,34,.72);
+      font-size: 13px;
+    }
+    .hint .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 8px 10px;
+      background: rgba(255,255,255,.55);
+      border: 1px dashed rgba(255,77,136,.35);
+      border-radius: 999px;
+      user-select:none;
+      -webkit-user-select:none;
+    }
+
+    .footer-floral{
+      height: 70px;
+      background:
+        radial-gradient(22px 22px at 14% 70%, rgba(255,77,136,.32) 0 55%, transparent 56%),
+        radial-gradient(20px 20px at 22% 48%, rgba(255,155,191,.36) 0 55%, transparent 56%),
+        radial-gradient(24px 24px at 30% 72%, rgba(255,210,230,.55) 0 55%, transparent 56%),
+        radial-gradient(22px 22px at 70% 70%, rgba(255,77,136,.30) 0 55%, transparent 56%),
+        radial-gradient(20px 20px at 78% 48%, rgba(255,155,191,.34) 0 55%, transparent 56%),
+        radial-gradient(24px 24px at 86% 72%, rgba(255,210,230,.55) 0 55%, transparent 56%),
+        linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,.75));
+      border-top: 1px solid rgba(255,107,156,.18);
+    }
+
+    /* ===== Improved: POP IN -> SLOW FLOAT UP -> FADE OUT ===== */
+    .bloom{
+      position:absolute;
+      width: var(--size, 70px);
+      height: var(--size, 70px);
+
+      left: var(--x);
+      top: var(--y);
+
+      /* start slightly below finger for "pop" feel */
+      transform: translate3d(calc(-50% + var(--dx, 0px)), calc(-50% + 12px), 0)
+                 scale(.55) rotate(var(--rot, 0deg));
+      opacity: 0;
+
+      filter: drop-shadow(0 14px 16px rgba(0,0,0,.16));
+      will-change: transform, opacity;
+      animation: bloomPopFloat var(--dur, 3200ms) cubic-bezier(.18,.8,.22,1) forwards;
+    }
+
+    @keyframes bloomPopFloat{
+      /* POP IN */
+      0%{
+        opacity: 0;
+        transform: translate3d(calc(-50% + var(--dx)), calc(-50% + 14px), 0)
+                   scale(.45) rotate(var(--rot));
+      }
+      10%{
+        opacity: 1;
+        transform: translate3d(calc(-50% + var(--dx)), -50%, 0)
+                   scale(1.08) rotate(calc(var(--rot) + 4deg));
+      }
+      18%{
+        transform: translate3d(calc(-50% + var(--dx)), -50%, 0)
+                   scale(1.0) rotate(var(--rot));
+      }
+
+      /* FLOAT UP SLOWLY (stay visible) */
+      70%{
+        opacity: 1;
+        transform: translate3d(
+          calc(-50% + var(--dx2, 0px)),
+          calc(-50% - (var(--rise, 320px) * .75)),
+          0
+        )
+        scale(1.02)
+        rotate(calc(var(--rot) + var(--spin, 10deg)));
+      }
+
+      /* FADE OUT near the top */
+      100%{
+        opacity: 0;
+        transform: translate3d(
+          calc(-50% + var(--dx3, 0px)),
+          calc(-50% - var(--rise, 320px)),
+          0
+        )
+        scale(.98)
+        rotate(calc(var(--rot) + (var(--spin, 10deg) * 1.4)));
+      }
+    }
+
+    @media (max-width: 380px){
+      .header{ padding: 18px 18px 12px; }
+      .content{ padding: 0 18px 16px; }
+      .badge{ width:40px; height:40px; border-radius: 13px; }
+      .message{ padding: 14px 14px; }
+      .message p{ font-size: 14.5px; }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .petal-bg{ animation:none; }
+      .bloom{ animation:none; opacity:1; transform: translate3d(-50%,-50%,0) scale(1) rotate(var(--rot)); }
+    }
+  </style>
+</head>
+<body>
+  <div class="petal-bg" aria-hidden="true"></div>
+  <div id="bloom-layer" aria-hidden="true"></div>
+
+  <main class="wrap">
+    <section class="card" role="article" aria-label="Valentine’s Greeting Card">
+      <header class="header">
+        <div class="title-row">
+          <div class="badge" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M12 21s-7-4.55-9.5-9.08C.64 8.72 2.08 6 5.2 6c1.7 0 3.05.9 3.8 2.1C9.75 6.9 11.1 6 12.8 6c3.12 0 4.56 2.72 2.7 5.92C19 16.45 12 21 12 21Z"
+                    fill="rgba(255,255,255,.95)"/>
+              <circle cx="18.5" cy="6.5" r="2.2" fill="rgba(255,255,255,.9)"/>
+              <circle cx="20.2" cy="10.3" r="1.2" fill="rgba(255,255,255,.85)"/>
+            </svg>
+          </div>
+          <h1 class="title">Happy Valentine’s 💐</h1>
+        </div>
+        <p class="subtitle">Tap anywhere — flowers pop, float slowly upward, then fade 🌷</p>
+      </header>
+
+      <div class="content">
+        <div class="message">
+          <p>God is Love, he is the center and reality, hope you keep fighting everyday and always come to the Lord, I will support you silently on your battle, if the Lord allow, I will pursue you even after training, as long as it's not a self that choose.</p>
+        </div>
+
+        <div class="hint">
+          <div class="pill" id="tapHint">👆 Tap to bloom</div>
+          <div class="pill">Blooms: <span id="count">0</span></div>
+        </div>
+      </div>
+
+      <div class="footer-floral" aria-hidden="true"></div>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const layer = document.getElementById("bloom-layer");
+      const countEl = document.getElementById("count");
+      const tapHint = document.getElementById("tapHint");
+
+      let blooms = 0;
+      let lastTouchTime = 0;
+
+      const rand = (min, max) => Math.random() * (max - min) + min;
+      const pick = (arr) => arr[(Math.random() * arr.length) | 0];
+
+      const palettes = [
+        { petals: ["#ff4d88","#ff77a8","#ff9bbf","#f72585"], centers: ["#ffd166","#ffb703","#ffe66d"] },
+        { petals: ["#ff6b6b","#ffa5a5","#ffd1d1","#ff5d8f"], centers: ["#ffd166","#ffb703"] },
+        { petals: ["#b5179e","#f783c3","#ffd6ff","#ff8fab"], centers: ["#ffe66d","#ffd166"] },
+        { petals: ["#ff3d7f","#ff87ab","#ffcad4","#ff9bbf"], centers: ["#fff1a8","#ffd166"] }
+      ];
+
+      function svgDaisy(p1, p2, c){
+        const stroke = "rgba(255,255,255,.65)";
+        const petals = Array.from({length: 12}).map((_, i) => {
+          const a = i * (360/12);
+          return `<ellipse cx="0" cy="-30" rx="9.5" ry="18"
+                  fill="${i%2 ? p1 : p2}" stroke="${stroke}" stroke-width="1.1"
+                  transform="rotate(${a})" />`;
+        }).join("");
+        return `
+          <svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true">
+            <g transform="translate(50 50)">
+              ${petals}
+              <circle r="14" fill="${c}" stroke="rgba(120,70,30,.25)" stroke-width="1.2"/>
+              <circle r="6" fill="rgba(255,255,255,.35)"/>
+            </g>
+          </svg>`;
+      }
+
+      function svgRose(p1, p2){
+        return `
+          <svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true">
+            <defs>
+              <radialGradient id="rg" cx="35%" cy="30%" r="70%">
+                <stop offset="0%" stop-color="${p2}"/>
+                <stop offset="60%" stop-color="${p1}"/>
+                <stop offset="100%" stop-color="${p1}" stop-opacity=".92"/>
+              </radialGradient>
+            </defs>
+            <g>
+              <path d="M52 16c-14 0-25 9-25 22 0 9 6 15 12 18-7 2-12 8-12 16 0 15 12 27 27 27 16 0 28-12 28-28 0-9-6-16-13-19 8-3 13-9 13-17 0-12-10-19-30-19Z"
+                    fill="url(#rg)" stroke="rgba(255,255,255,.55)" stroke-width="1.2"/>
+              <path d="M36 44c7-10 21-10 28-1 7 9 3 20-4 25-9 7-21 5-26-3"
+                    fill="none" stroke="rgba(255,255,255,.55)" stroke-width="2.2" stroke-linecap="round"/>
+            </g>
+          </svg>`;
+      }
+
+      function svgTulip(p1, p2, c){
+        return `
+          <svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true">
+            <g>
+              <path d="M50 18c-6 11-18 12-23 25-5 13 6 30 23 30s28-17 23-30c-5-13-17-14-23-25Z"
+                    fill="${p1}" stroke="rgba(255,255,255,.55)" stroke-width="1.2"/>
+              <path d="M50 28c-4 8-11 10-13 18-2 8 5 18 13 18s15-10 13-18c-2-8-9-10-13-18Z"
+                    fill="${p2}" opacity=".9"/>
+              <circle cx="50" cy="52" r="6" fill="${c}" opacity=".45"/>
+            </g>
+          </svg>`;
+      }
+
+      function svgSunflower(){
+        const petals = Array.from({length: 14}).map((_, i) => {
+          const a = i * (360/14);
+          return `<ellipse cx="0" cy="-28" rx="8.5" ry="17"
+                  fill="#ffd166" stroke="rgba(255,255,255,.45)" stroke-width="1"
+                  transform="rotate(${a})" />`;
+        }).join("");
+        return `
+          <svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true">
+            <g transform="translate(50 50)">
+              ${petals}
+              <circle r="16" fill="#7a4a1b" stroke="rgba(90,50,10,.35)" stroke-width="2"/>
+              <circle r="10" fill="rgba(0,0,0,.12)"/>
+              <circle r="5" fill="rgba(255,255,255,.18)"/>
+            </g>
+          </svg>`;
+      }
+
+      function svgCherryBlossom(p1, p2, c){
+        const petals = Array.from({length: 5}).map((_, i) => {
+          const a = i * 72;
+          return `<path d="M0-22 C8-22 12-14 7-8 C12-2 6 6 0 6 C-6 6 -12-2 -7-8 C-12-14 -8-22 0-22Z"
+                   fill="${i%2?p1:p2}" opacity=".95" transform="rotate(${a})" />`;
+        }).join("");
+        return `
+          <svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true">
+            <g transform="translate(50 50)">
+              ${petals}
+              <circle r="7" fill="${c}" opacity=".8"/>
+              <circle r="3.5" fill="rgba(255,255,255,.35)"/>
+            </g>
+          </svg>`;
+      }
+
+      function svgLavender(){
+        return `
+          <svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true">
+            <g>
+              <path d="M50 18 C44 28 44 40 50 50 C56 40 56 28 50 18Z" fill="#b5179e" opacity=".9"/>
+              <path d="M50 28 C42 38 42 54 50 66 C58 54 58 38 50 28Z" fill="#f783c3" opacity=".9"/>
+              <path d="M50 66 L50 88" stroke="rgba(70,130,90,.7)" stroke-width="4" stroke-linecap="round"/>
+              <path d="M50 78 C44 74 40 72 36 70" stroke="rgba(70,130,90,.55)" stroke-width="3" stroke-linecap="round"/>
+              <path d="M50 78 C56 74 60 72 64 70" stroke="rgba(70,130,90,.55)" stroke-width="3" stroke-linecap="round"/>
+            </g>
+          </svg>`;
+      }
+
+      const flowerMakers = [
+        ({p1,p2,c}) => svgTulip(p1,p2,c),
+        ({p1,p2,c}) => svgRose(p1,p2),
+        ({p1,p2,c}) => svgDaisy(p1,p2,c),
+        () => svgSunflower(),
+        ({p1,p2,c}) => svgCherryBlossom(p1,p2,c),
+        () => svgLavender()
+      ];
+
+      function getPoint(ev){
+        if (ev.touches && ev.touches.length) return { x: ev.touches[0].clientX, y: ev.touches[0].clientY };
+        return { x: ev.clientX, y: ev.clientY };
+      }
+
+      function spawnBloom(x, y){
+        const pal = pick(palettes);
+        const p1 = pick(pal.petals);
+        const p2 = pick(pal.petals);
+        const c  = pick(pal.centers);
+
+        // slower + smoother
+        const size = rand(56, 92);
+        const rot  = rand(-20, 20);
+        const rise = rand(280, 420);     // float distance
+        const spin = rand(10, 22);       // gentle rotation overall
+        const dur  = rand(3200, 4600);   // slower animation duration
+
+        // gentle horizontal drift path
+        const dx  = rand(-10, 10);
+        const dx2 = dx + rand(-26, 26);
+        const dx3 = dx2 + rand(-18, 18);
+
+        const maker = pick(flowerMakers);
+
+        const el = document.createElement("div");
+        el.className = "bloom";
+        el.style.setProperty("--x", x + "px");
+        el.style.setProperty("--y", y + "px");
+        el.style.setProperty("--size", size + "px");
+        el.style.setProperty("--rot", rot + "deg");
+        el.style.setProperty("--rise", rise + "px");
+        el.style.setProperty("--spin", spin + "deg");
+        el.style.setProperty("--dur", dur + "ms");
+        el.style.setProperty("--dx", dx + "px");
+        el.style.setProperty("--dx2", dx2 + "px");
+        el.style.setProperty("--dx3", dx3 + "px");
+        el.innerHTML = maker({p1,p2,c});
+
+        layer.appendChild(el);
+
+        blooms++;
+        countEl.textContent = String(blooms);
+
+        // fade hint as user interacts
+        tapHint.style.opacity = String(Math.max(0, (parseFloat(getComputedStyle(tapHint).opacity) || 1) - 0.14));
+
+        // cleanup
+        window.setTimeout(() => el.remove(), dur + 120);
+      }
+
+      function onInteract(ev){
+        const now = Date.now();
+        if (ev.type === "click" && (now - lastTouchTime) < 650) return; // iOS ghost click
+        const p = getPoint(ev);
+        spawnBloom(p.x, p.y);
+      }
+
+      window.addEventListener("touchstart", (ev) => {
+        lastTouchTime = Date.now();
+        onInteract(ev);
+      }, { passive: true });
+
+      window.addEventListener("click", onInteract, { passive: true });
+
+      // tiny intro bloom
+      window.addEventListener("load", () => {
+        spawnBloom(window.innerWidth * 0.5, window.innerHeight * 0.56);
+      });
+    })();
+  </script>
+</body>
+</html>
