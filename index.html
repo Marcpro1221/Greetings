@@ -70,6 +70,7 @@
       inset:0;
       pointer-events:none;
       overflow:hidden;
+      z-index: 9999;
     }
 
     .card{
@@ -257,6 +258,108 @@
       .petal-bg{ animation:none; }
       .bloom{ animation:none; opacity:1; transform: translate3d(-50%,-50%,0) scale(1) rotate(var(--rot)); }
     }
+    .audio-box{
+        margin-top: 14px;
+        padding: 12px 12px;
+        background: rgba(255,255,255,.72);
+        border: 1px solid rgba(255, 107, 156, .28);
+        border-radius: 16px;
+        box-shadow: 0 10px 18px rgba(0,0,0,.05);
+    }
+    .audio-title{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:10px;
+        margin: 0 0 8px;
+        color: rgba(43,28,34,.78);
+        font-size: 13px;
+    }
+    .audio-title .tag{
+        padding: 4px 10px;
+        border-radius: 999px;
+        border: 1px dashed rgba(255,77,136,.35);
+        background: rgba(255,255,255,.55);
+    }
+    .audio-box audio{
+        width: 100%;
+    }
+    .audio-note{
+        margin: 8px 2px 0;
+        font-size: 12px;
+        color: rgba(43,28,34,.65);
+        line-height: 1.35;
+    }
+    .cute-quiz{
+    margin-top: 14px;
+    padding: 14px 14px;
+    background: rgba(255,255,255,.72);
+    border: 1px solid rgba(255, 107, 156, .28);
+    border-radius: 16px;
+    box-shadow: 0 10px 18px rgba(0,0,0,.05);
+    }
+
+    .cute-q{
+    font-size: 12.5px;
+    color: rgba(43,28,34,.70);
+    margin-bottom: 4px;
+    }
+
+    .cute-title{
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: .2px;
+    color: rgba(43,28,34,.92);
+    }
+
+    .cute-buttons{
+    position: relative;
+    margin-top: 12px;
+    height: 54px;
+    }
+
+    .cute-buttons button{
+    appearance: none;
+    -webkit-appearance: none;
+    border: 0;
+    border-radius: 999px;
+    padding: 11px 16px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    transition: transform 120ms ease, filter 120ms ease;
+    }
+
+    .cute-buttons button:active{
+    transform: scale(.98);
+    }
+
+    .btn-yes{
+    position: absolute;
+    left: 0;
+    top: 0;
+    background: linear-gradient(135deg, rgba(255,77,136,.95), rgba(255,155,191,.9));
+    color: white;
+    box-shadow: 0 12px 20px rgba(255,77,136,.18);
+    }
+
+    .btn-no{
+    position: absolute;
+    left: 104px; /* initial spot; JS will move it */
+    top: 0;
+    background: rgba(255,255,255,.75);
+    border: 1px dashed rgba(255,77,136,.38);
+    color: rgba(43,28,34,.85);
+    }
+
+    .cute-result{
+    margin-top: 10px;
+    font-size: 13px;
+    color: rgba(43,28,34,.75);
+    min-height: 18px;
+    }
   </style>
 </head>
 <body>
@@ -275,16 +378,39 @@
               <circle cx="20.2" cy="10.3" r="1.2" fill="rgba(255,255,255,.85)"/>
             </svg>
           </div>
-          <h1 class="title">Happy Valentine’s 💐</h1>
+          <h1 class="title">Grace in Bloom🌸</h1>
         </div>
-        <p class="subtitle">Tap anywhere — flowers pop, float slowly upward, then fade 🌷</p>
+        <p class="subtitle">Tap anywhere Benggg! — flowers pop, float slowly upward, then fade 🌷</p>
       </header>
 
       <div class="content">
         <div class="message">
-          <p>God is Love, he is the center and reality, hope you keep fighting everyday and always come to the Lord, I will support you silently on your battle, if the Lord allow, I will pursue you even after training, as long as it's not a self that choose.</p>
+          <p>God is Love, he is the center and reality into us, hope you keep fighting everyday and always come to the Lord no matter the situations, I will also support you silently on your battle, Kantahan gud tikag basag nga kanta og mag crycry ka lage, wishing you happiness and peace, 'if' the Lord allow on his arrangement, I will pursue you even after FTTM training.🫶</p>
+        </div>
+        <div class="audio-box">
+        <div class="audio-title">
+            <span>🎙️ Voicemail message for Juvilyn Polinar</span>
+            <span class="tag">Tap to play</span>
         </div>
 
+        <!-- TEMP audio file (replace src with your own .mp3/.m4a later) -->
+        <audio controls preload="none">
+            <source src="voicemail.mp3" type="audio/mpeg" />
+            <source src="vm.m4a" type="audio/mp4" />
+            Your browser does not support the audio element.
+        </audio>
+        <div class="cute-quiz" id="cuteQuiz" aria-label="Cute question">
+            <div class="cute-q">Quick question… 😶‍🌫️</div>
+            <div class="cute-title">Are you cute?</div>
+
+            <div class="cute-buttons" id="cuteButtons">
+                <button class="btn-yes" id="btnYes" type="button">Yes</button>
+                <button class="btn-no" id="btnNo" type="button" aria-label="No (this button moves)">No</button>
+            </div>
+
+            <div class="cute-result" id="cuteResult" aria-live="polite"></div>
+        </div>
+        </div>
         <div class="hint">
           <div class="pill" id="tapHint">👆 Tap to bloom</div>
           <div class="pill">Blooms: <span id="count">0</span></div>
@@ -489,6 +615,92 @@
       window.addEventListener("load", () => {
         spawnBloom(window.innerWidth * 0.5, window.innerHeight * 0.56);
       });
+      // ==============================
+        // "ARE YOU CUTE?" INTERACTION
+        // ==============================
+        const cuteButtons = document.getElementById("cuteButtons");
+        const btnYes = document.getElementById("btnYes");
+        const btnNo  = document.getElementById("btnNo");
+        const cuteResult = document.getElementById("cuteResult");
+
+        function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
+
+        // Move the NO button to a random position inside the button area
+        function moveNoButton() {
+        if (!cuteButtons || !btnNo) return;
+
+        const area = cuteButtons.getBoundingClientRect();
+        const noRect = btnNo.getBoundingClientRect();
+
+        // padding so it stays inside and not under the edges
+        const pad = 6;
+
+        const maxX = Math.max(pad, area.width  - noRect.width  - pad);
+        const maxY = Math.max(pad, area.height - noRect.height - pad);
+
+        // Avoid staying too close to YES button (left side)
+        let x = Math.random() * maxX;
+        if (x < 90) x = clamp(x + 90, pad, maxX);
+
+        const y = Math.random() * maxY;
+
+        btnNo.style.left = `${x}px`;
+        btnNo.style.top  = `${y}px`;
+        }
+
+        // Make NO hard to tap on phones: run away on approach
+        function armNoButton() {
+        if (!btnNo) return;
+
+        // Desktop hover
+        btnNo.addEventListener("pointerenter", moveNoButton);
+
+        // Mobile: move on touchstart so it dodges taps
+        btnNo.addEventListener("touchstart", (e) => {
+            // don't let it "click" accidentally
+            e.preventDefault();
+            moveNoButton();
+        }, { passive: false });
+
+        // Also dodge on mousedown (some browsers)
+        btnNo.addEventListener("mousedown", (e) => {
+            e.preventDefault();
+            moveNoButton();
+        });
+        }
+
+        // Burst of flowers when YES is clicked
+        function burstFlowersFromElement(el, count = 12) {
+        if (!el) return;
+        const r = el.getBoundingClientRect();
+
+        // start point near the YES button center
+        const baseX = r.left + r.width / 2;
+        const baseY = r.top + r.height / 2;
+
+        cuteResult.textContent = "Correct answer 😌🌷";
+
+        // spawn multiple with slight scatter + slight delay for a “wow” effect
+        for (let i = 0; i < count; i++) {
+            const delay = i * 55; // stagger = more interactive feel
+            setTimeout(() => {
+            const dx = (Math.random() * 120) - 60;
+            const dy = (Math.random() * 80) - 40;
+            // spawnBloom should already exist in your script
+            spawnBloom(baseX + dx, baseY + dy);
+            }, delay);
+        }
+        }
+
+        if (btnYes) {
+        btnYes.addEventListener("click", () => burstFlowersFromElement(btnYes, 14), { passive: true });
+        btnYes.addEventListener("touchstart", () => burstFlowersFromElement(btnYes, 14), { passive: true });
+        }
+
+        armNoButton();
+
+        // Optional: reposition NO once on load so it feels “alive”
+        moveNoButton();
     })();
   </script>
 </body>
