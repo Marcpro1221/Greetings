@@ -4,7 +4,18 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#ff6b9c" />
-  <title>Valentine’s Greeting Card</title>
+  <link rel="icon" type="image/svg+xml" href='data:image/svg+xml,
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+    <defs>
+    <linearGradient id="h" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="%23ff77a8"/>
+    <stop offset="100%" stop-color="%23ff4d88"/>
+    </linearGradient>
+    </defs>
+    <path d="M50 88s-30-19-38-38c-6-14 5-28 20-28 9 0 15 5 18 11 3-6 9-11 18-11 15 0 26 14 20 28-8 19-38 38-38 38z"
+    fill="url(%23h)"/>
+    </svg>'>
+  <title>Greeting Card</title>
   <style>
     :root{
       --bg1:#fff1f6;
@@ -395,7 +406,7 @@
 
         <!-- TEMP audio file (replace src with your own .mp3/.m4a later) -->
         <audio controls preload="none">
-            <source src="voicemail.mp3" type="audio/mpeg" />
+            <source src="vm.mp3" type="audio/mpeg" />
             <source src="vm.m4a" type="audio/mp4" />
             Your browser does not support the audio element.
         </audio>
@@ -407,16 +418,9 @@
                 <button class="btn-yes" id="btnYes" type="button">Yes</button>
                 <button class="btn-no" id="btnNo" type="button" aria-label="No (this button moves)">No</button>
             </div>
-
             <div class="cute-result" id="cuteResult" aria-live="polite"></div>
         </div>
         </div>
-        <div class="hint">
-          <div class="pill" id="tapHint">👆 Tap to bloom</div>
-          <div class="pill">Blooms: <span id="count">0</span></div>
-        </div>
-      </div>
-
       <div class="footer-floral" aria-hidden="true"></div>
     </section>
   </main>
@@ -627,25 +631,21 @@
 
         // Move the NO button to a random position inside the button area
         function moveNoButton() {
-        if (!cuteButtons || !btnNo) return;
+            if (!cuteButtons || !btnNo) return;
 
-        const area = cuteButtons.getBoundingClientRect();
-        const noRect = btnNo.getBoundingClientRect();
+            const area = cuteButtons.getBoundingClientRect();
+            const noRect = btnNo.getBoundingClientRect();
 
-        // padding so it stays inside and not under the edges
-        const pad = 6;
+            const pad = 6;
 
-        const maxX = Math.max(pad, area.width  - noRect.width  - pad);
-        const maxY = Math.max(pad, area.height - noRect.height - pad);
+            const maxX = area.width - noRect.width - pad;
+            const maxY = area.height - noRect.height - pad;
 
-        // Avoid staying too close to YES button (left side)
-        let x = Math.random() * maxX;
-        if (x < 90) x = clamp(x + 90, pad, maxX);
+            const x = Math.random() * maxX;
+            const y = Math.random() * maxY;
 
-        const y = Math.random() * maxY;
-
-        btnNo.style.left = `${x}px`;
-        btnNo.style.top  = `${y}px`;
+            btnNo.style.left = `${x}px`;
+            btnNo.style.top = `${y}px`;
         }
 
         // Make NO hard to tap on phones: run away on approach
